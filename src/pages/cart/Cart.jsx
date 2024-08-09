@@ -5,24 +5,28 @@ import Modal from '../../components/modal/Modal';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteFromCart } from '../../redux/cartSlice';
 import { toast } from 'react-toastify';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection,query } from 'firebase/firestore';
 import { fireDB } from '../../fireabase/FirebaseConfig';
 
 
+let grandTotal=0;
+
+    
 function Cart() {
-
     const context = useContext(myContext)
-    const { mode } = context;
-
+    const { product,mode } = context;
     const dispatch = useDispatch()
 
     const cartItems = useSelector((state) => state.cart);
-    console.log(cartItems)
+
+    
+
 
     const deleteCart = (item) => {
         dispatch(deleteFromCart(item));
         toast.success("Delete cart")
     }
+
 
     useEffect(() => {
         localStorage.setItem('cart', JSON.stringify(cartItems));
@@ -30,18 +34,23 @@ function Cart() {
 
     const [totalAmout, setTotalAmount] = useState(0);
 
+
     useEffect(() => {
         let temp = 0;
         cartItems.forEach((cartItem) => {
-            temp = temp + parseInt(cartItem.price)
+            temp = temp + parseInt(cartItem.price * cartItem.quantity)
         })
         setTotalAmount(temp);
-        console.log(temp)
+   
     }, [cartItems])
-
-    const shipping = parseInt(100);
-
-    const grandTotal = shipping + totalAmout;
+    let shipping = parseInt(100);
+    if(totalAmout>800)
+    {
+        shipping = 0;
+    }
+    grandTotal = shipping+totalAmout;
+    
+    
     // console.log(grandTotal)
 
     /**========================================================================
@@ -54,6 +63,7 @@ function Cart() {
     const [phoneNumber, setPhoneNumber] = useState("")
 
     const buyNow = async() => {
+        
         if (name === "" || address == "" || pincode == "" || phoneNumber == "") {
             return toast.error("All fields are required", {
                 position: "top-center",
@@ -87,14 +97,16 @@ function Cart() {
             amount: parseInt(grandTotal * 100),
             currency: "INR",
             order_receipt: 'order_rcptid_' + name,
-            name: "E-Bharat",
+            name: "Festichic",
             description: "for testing purpose",
             handler: function(response) {
-                console.log(response)
+                console.log("--->",response)
+                
+                
                 toast.success('Payment Successful')
 
                 const paymentId = response.razorpay_payment_id;
-
+                            
                 const orderInfo = {
                     cartItems,
                     addressInfo,
@@ -109,6 +121,7 @@ function Cart() {
                     userid: JSON.parse(localStorage.getItem("user")).user.uid,
                     paymentId
                 }
+               
 
                 try {
 
@@ -128,9 +141,12 @@ function Cart() {
         var pay = new window.Razorpay(options);
         pay.open();
         console.log(pay)
+    
 
 
     }
+
+
     return ( <
         Layout >
         <
@@ -143,7 +159,8 @@ function Cart() {
         <
         div className = "rounded-lg md:w-2/3 " > {
             cartItems.map((item, index) => {
-                const { title, price, description, imageUrl } = item;
+                const { title, price, description, imageUrl, size,quantity,userName,userNumber} = item;
+        
                 return ( <
                     div className = "justify-between mb-6 rounded-lg border  drop-shadow-xl bg-white p-6  sm:flex  sm:justify-start"
                     style = {
@@ -154,18 +171,38 @@ function Cart() {
                     className = "w-full rounded-lg sm:w-40" / >
                     <
                     div className = "sm:ml-4 sm:flex sm:w-full sm:justify-between" >
-                    <
-                    div className = "mt-5 sm:mt-0" >
+                    < div className = "mt-5 sm:mt-0" >
                     <
                     h2 className = "text-lg font-bold text-gray-900"
                     style = {
                         { color: mode === 'dark' ? 'white' : '' } } > { title } < /h2> <
                     h2 className = "text-sm  text-gray-900"
                     style = {
-                        { color: mode === 'dark' ? 'white' : '' } } > { description } < /h2> <
+                        { color: mode === 'dark' ? 'white' : '' } } > { description }
+                         < /h2>
+                         <
+                    h2 className = "text-lg font-bold text-gray-900  "
+                    style = {
+                        { color: mode === 'dark' ? 'white' : '' } } >Quantity : 
+                        {
+                            quantity
+                        }
+                         ‎   Size: { size } 
+                         < /h2>
+                         <
+                         h2 className = "text-sm  text-gray-900"
+                         style = {
+                             { color: mode === 'dark' ? 'white' : '' } } >Name : { userName}
+                              < /h2>
+                              <
+                              h2 className = "text-sm  text-gray-900"
+                              style = {
+                                  { color: mode === 'dark' ? 'white' : '' } } >Number : { userNumber}
+                                   < /h2>
+                           <
                     p className = "mt-1 text-xs font-semibold text-gray-700"
                     style = {
-                        { color: mode === 'dark' ? 'white' : '' } } > ₹{ price } < /p> <
+                        { color: mode === 'dark' ? 'white' : '' } } > ₹{ price} * {quantity } = ₹{ price * quantity } < /p> <
                     /div> <
                     div onClick = {
                         () => deleteCart(item) }
@@ -206,8 +243,9 @@ function Cart() {
         style = {
             { color: mode === 'dark' ? 'white' : '' } } > Subtotal < /p> <
         p className = "text-gray-700"
+
         style = {
-            { color: mode === 'dark' ? 'white' : '' } } > ₹{ totalAmout } < /p> <
+            { color: mode === 'dark' ? 'white' : '' } } > ₹{ totalAmout} < /p> <
         /div> <
         div className = "flex justify-between" >
         <
@@ -248,5 +286,5 @@ function Cart() {
         /Layout>
     )
 }
-
-export default Cart
+export {grandTotal};
+export default Cart;

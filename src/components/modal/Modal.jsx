@@ -1,6 +1,10 @@
 import { Dialog, Transition } from '@headlessui/react'
 import { Fragment, useState } from 'react'
+import { toast } from 'react-toastify';
+import { grandTotal } from '../../pages/cart/Cart'
+import { fireDB } from '../../fireabase/FirebaseConfig';
 
+import { auth } from '../../fireabase/FirebaseConfig';
 export default function Modal({ name, address, pincode, phoneNumber, setName, setAddress, setPincode, setPhoneNumber, buyNow }) {
     let [isOpen, setIsOpen] = useState(false)
 
@@ -11,13 +15,36 @@ export default function Modal({ name, address, pincode, phoneNumber, setName, se
     function openModal() {
         setIsOpen(true)
     }
+      console.log("---7---",fireDB);
+
+  const buyAuth = JSON.parse(localStorage.getItem('user'));
+  console.log("---79---",buyAuth);
+
+
+
 
     return (
         <>
             <div className="  text-center rounded-lg text-white font-bold">
                 <button
                     type="button"
-                    onClick={openModal}
+                    onClick={() => {                      
+                        if (!buyAuth) {                        
+                            setTimeout(function() {
+                                toast.info("Please Login To Continue!");
+                              });
+                              setTimeout(function() {
+                                window.location.href = '/login';
+                              }, 2000);                        
+                        }
+                        else if(grandTotal>100)
+                        {
+                            openModal();
+                        } else {
+                            toast.warn("Cart is Empty!!");
+                          // Handle the else case, e.g., show a message or do something else
+                        }
+                      }}
                     className="w-full  bg-violet-600 py-2 text-center rounded-lg text-white font-bold "
                 >
                     Buy Now

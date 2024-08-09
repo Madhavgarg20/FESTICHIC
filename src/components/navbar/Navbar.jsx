@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, useContext, useState} from 'react'
 import myContext from '../../context/data/myContext';
 import { BsFillCloudSunFill } from 'react-icons/bs'
 import { FiSun } from 'react-icons/fi'
@@ -11,9 +11,13 @@ function Navbar() {
   const context = useContext(myContext);
   const {mode, toggleMode} = context;
 
+  
+
   const [open, setOpen] = useState(false)
 
   const user = JSON.parse(localStorage.getItem('user'));
+  
+  console.log("--4--",user)
 
   // console.log(user.user.email)
 
@@ -92,7 +96,7 @@ function Navbar() {
                     <Link to={'/'} className="-m-2 block p-2 font-medium text-gray-900 cursor-pointer">
                       <img
                         className="inline-block w-10 h-10 rounded-full"
-                        src="src/assets/Screenshot 2023-10-04 at 1.43.00 AM.png"
+                        src="src/assets/festichic.png"
                         alt="Dan_Abromov" />                                        </Link>
                   </div>
                 </div>
@@ -100,7 +104,7 @@ function Navbar() {
                 <div className="border-t border-gray-200 px-4 py-6">
                   <a href="#" className="-m-2 flex items-center p-2">
                     <img
-                      src="img/indiaflag.png"
+                      src="https://ecommerce-sk.vercel.app/img/indiaflag.png"
                       alt=""
                       className="block h-auto w-5 flex-shrink-0"
                     />
@@ -139,7 +143,8 @@ function Navbar() {
               <div className="ml-4 flex lg:ml-0">
                 <Link to={'/'} className='flex'>
                   <div className="flex ">
-                    <h1 className=' text-2xl font-bold text-black  px-2 py-1 rounded' style={{ color: mode === 'dark' ? 'white' : '', }}>FESTICHIC-APP</h1>
+                    <h1 className=' text-2xl font-bold text-black  px-2 py-1 rounded' style={{ color: mode === 'dark' ? 'white' : '', }}>FESTICHIC-APP </h1>
+                    <h1 className=' text-2xl font-bold text-blue-300 px-2 py-1 rounded' style={{ color: mode === 'dark' ? 'white' : '', }}>Hello </h1>
                   </div>
                 </Link>
               </div>
@@ -181,7 +186,7 @@ function Navbar() {
                   <a href="#" className="flex items-center text-gray-700 ">
                     <img
                       className="inline-block w-10 h-10 rounded-full"
-                      src="src/assets/Screenshot 2023-10-04 at 1.43.00 AM.png"
+                      src="src/assets/festichic.png"
                       alt="Dan_Abromov" />
                   </a>
                 </div>
